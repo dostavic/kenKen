@@ -1,3 +1,4 @@
+import copy
 import re
 import sys
 
@@ -45,49 +46,60 @@ class KenKen:
         self.field[x][y] = n
         return True
 
+    def check_row_column(self):
+        # print("SDJKSDAKKSAJD")
+        # self.print_game()
+        field_t = copy.deepcopy(self.field)
+        field_b = copy.deepcopy(self.field)
+        # self.print_game()
+        for i in range(self.size):
+            for j in range(self.size):
+                field_t[i][j] = field_t[j][i]
+
+
+
+        for i in field_b:
+            arr = i
+            s_arr = set(arr)
+            if len(arr) != len(s_arr):
+                return False
+
+        for i in field_t:
+            arr = i
+            s_arr = set(arr)
+            if len(arr) != len(s_arr):
+                return False
+        return True
+
     def victory_check(self):
 
         for block in self.blocks:
             if block[-2] == "add":
                 res = 0
-                # print(block)
                 for i in range(0, len(block[0]), 2):
                     res += self.field[block[0][i + 1]][block[0][i]]
-                    # print(self.field[block[0][i+1]][block[0][i]])
                 if res != block[-1]:
                     return False
-                # print("ADD:", res, "REQ: ", block[-1], "RESULT:", res == block[-1])
-                # print("-----------------------------------------------------")
             elif block[-2] == "sub":
                 res = 0
-                # print(block)
                 for i in range(0, len(block[0]), 2):
                     res = abs(res)
                     res -= self.field[block[0][i + 1]][block[0][i]]
-                    # print(self.field[block[0][i+1]][block[0][i]])
                 if abs(res) != block[-1]:
                     return False
-                # print("SUB:", abs(res), "REQ: ", block[-1], "RESULT:", abs(res) == block[-1])
-                # print("-----------------------------------------------------")
             elif block[-2] == "mult":
                 res = 1
-                # print(block)
                 for i in range(0, len(block[0]), 2):
                     res *= self.field[block[0][i + 1]][block[0][i]]
-                    # print(self.field[block[0][i+1]][block[0][i]])
                 if res != block[-1]:
                     return False
-                # print("MULT:", abs(res), "REQ: ", block[-1], "RESULT:", res == block[-1])
-                # print("-----------------------------------------------------")
             elif block[-2] == "div":
-                # print(block)
                 nums = []
                 not_complete_block = False
                 for i in range(0, len(block[0]), 2):
                     if self.field[block[0][i + 1]][block[0][i]] == 0:
                         not_complete_block = True
                     nums.append(self.field[block[0][i + 1]][block[0][i]])
-                    # print(self.field[block[0][i+1]][block[0][i]])
                 if not_complete_block:
                     continue
 
@@ -96,9 +108,6 @@ class KenKen:
 
                 if res != block[-1]:
                     return False
-                # print("DIV:", abs(res), "REQ: ", block[-1], "RESULT:", res == block[-1])
-                # print("-----------------------------------------------------")
-
         return True
 
     def validate_blocks(self):
@@ -107,21 +116,17 @@ class KenKen:
             if block[-2] == "add":
                 res = 0
                 not_complete_block = False
-                # print(block)
                 for i in range(0, len(block[0]), 2):
                     if self.field[block[0][i + 1]][block[0][i]] == 0:
                         not_complete_block = True
                         break
                     res += self.field[block[0][i + 1]][block[0][i]]
-                    # print(self.field[block[0][i+1]][block[0][i]])
 
                 if not_complete_block:
                     continue
 
                 if res != block[-1]:
                     return False
-                # print("ADD:", res, "REQ: ", block[-1], "RESULT:", res == block[-1])
-                # print("-----------------------------------------------------")
             elif block[-2] == "sub":
                 res = 0
                 not_complete_block = False
@@ -131,15 +136,12 @@ class KenKen:
                         not_complete_block = True
                     res = abs(res)
                     res -= self.field[block[0][i + 1]][block[0][i]]
-                    # print(self.field[block[0][i+1]][block[0][i]])
 
                 if not_complete_block:
                     continue
 
                 if abs(res) != block[-1]:
                     return False
-                # print("SUB:", abs(res), "REQ: ", block[-1], "RESULT:", abs(res) == block[-1])
-                # print("-----------------------------------------------------")
             elif block[-2] == "mult":
                 res = 1
                 not_complete_block = False
@@ -154,17 +156,13 @@ class KenKen:
 
                 if res != block[-1]:
                     return False
-                # print("MULT:", abs(res), "REQ: ", block[-1], "RESULT:", res == block[-1])
-                # print("-----------------------------------------------------")
             elif block[-2] == "div":
-                # print(block)
                 nums = []
                 not_complete_block = False
                 for i in range(0, len(block[0]), 2):
                     if self.field[block[0][i + 1]][block[0][i]] == 0:
                         not_complete_block = True
                     nums.append(self.field[block[0][i + 1]][block[0][i]])
-                    # print(self.field[block[0][i+1]][block[0][i]])
                 if not_complete_block:
                     continue
 
@@ -173,9 +171,6 @@ class KenKen:
 
                 if res != block[-1]:
                     return False
-                # print("DIV:", abs(res), "REQ: ", block[-1], "RESULT:", res == block[-1])
-                # print("-----------------------------------------------------")
-
         return True
 
 
@@ -205,7 +200,8 @@ class KenKen:
 
     # Only for check
     def fill_array(self, size):
-        arr = [[1, 5, 4, 2, 3], [3, 1, 5, 4, 2], [2, 3, 1, 5, 4], [5, 4, 2, 3, 1], [4, 2, 3, 1, 5]]
+        # arr = [[1, 5, 4, 2, 3], [3, 1, 5, 4, 2], [2, 3, 1, 5, 4], [5, 4, 2, 3, 1], [4, 2, 3, 1, 5]]
+        arr = [[2, 1, 3], [1, 3, 2], [3, 2, 1]]
         for i in range(size):
             for j in range(size):
                 self.field[i][j] = arr[i][j]
